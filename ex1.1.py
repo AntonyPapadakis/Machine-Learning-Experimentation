@@ -68,7 +68,7 @@ start=0
 end=2
 
 points = p.getPoints(N,start,end)
-print(points)
+#print(points)
 
 #noise
 variance=0.1
@@ -78,17 +78,25 @@ noise = gn.getNoise(N,mean,variance)
 
 #get the yn's
 Y = lr.getY(N, points, noise, thetaTransposed)
-print(Y)
+#print(Y)
+
+#there are more data points than there are parameters to be determined
+thetaPredicted = ls.getY(N,points,Y)
+#print(thetaPredicted)
 
 
-#get the test set
-F = ls.getY(N,points,Y)
-print(F)
 
-#square error over training set
-sq_error = 0
-for i in range(0,6):
-    sq_error += math.pow(thetaTransposed[0,i] - F[0,i],2)
+#mean square error over training set
+msq_error = 0
+for i in range(0, N):
+   print(thetaPredicted[i])
+   print(Y)
+   sub = np.subtract(Y,np.dot(thetaPredicted[i].T,points[i]))
 
-sq_error = sq_error/6
-print(sq_error)
+   for i in range(0, N):
+       msq_error += math.pow(sub[0,i], 2)
+
+   msq_error = msq_error/N
+
+msq_error = msq_error/N
+print(msq_error)
