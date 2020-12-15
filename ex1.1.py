@@ -3,7 +3,7 @@ import equidistantPoints as p
 import gaussianNoise as gn
 import linearRegression as lr
 import leastSquaresEstimate as ls
-import math
+import meanSquareError as m
 
 '''
 -------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ noise = gn.getNoise(N,mean,variance)
 #print(noise)
 
 #get the yn's
-Y = lr.getY(N, points, noise, thetaTransposed)
+Y = lr.getY(N, points, noise, thetaTransposed).T
 #print(Y)
 
 #there are more data points than there are parameters to be determined
@@ -88,15 +88,8 @@ thetaPredicted = ls.getY(N,points,Y)
 
 #mean square error over training set
 msq_error = 0
-for i in range(0, N):
-   print(thetaPredicted[i])
-   print(Y)
-   sub = np.subtract(Y,np.dot(thetaPredicted[i].T,points[i]))
 
-   for i in range(0, N):
-       msq_error += math.pow(sub[0,i], 2)
+Y_pred = np.dot(thetaPredicted,points.reshape(1,20))
+MSE = m.MSE(Y_pred,Y,N)
 
-   msq_error = msq_error/N
-
-msq_error = msq_error/N
-print(msq_error)
+print("the MSE is:", MSE)
