@@ -7,6 +7,7 @@ import meanSquareError as m
 from random import random
 from random import seed
 import matplotlib.pyplot as plt
+import math
 
 '''
 -------------------------------------------------------------------------------------------
@@ -60,17 +61,15 @@ thetaValues = [0.2, -1, 0.9, 0.7,  0, -0.2]
 
 for i in range(0, 6):
     theta[i] = thetaValues[i]
-#print(theta)
 
 thetaTransposed = np.transpose(theta)
-#print(thetaTransposed)
 
 #N=20 equidistant points in the interval [0,2]
 N=20
 start=0
 end=2
 
-X = p.getPoints(N,start,end)
+X, Fx = p.getPoints(N,start,end)
 
 #noise
 variance=0.1
@@ -81,10 +80,10 @@ noise = gn.getNoise(N,mean,variance)
 Y = lr.getY(N, X, noise, thetaTransposed).T
 
 #there are more data points than there are parameters to be determined
-thetaPredicted = ls.getY(N,X,Y)
+thetaPredicted, Fx = ls.getY(N,Fx,Y)
 
 #predicted y values
-Y_pred = np.dot(thetaPredicted,X.reshape(1,N))
+Y_pred = np.dot(thetaPredicted.T,Fx.T)
 
 #mean square error over training set
 MSE = m.MSE(Y_pred,Y,N)
@@ -98,16 +97,12 @@ plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
 
-'''
-plt.figure(num=2)
-plt.title("training set")
-plt.plot(X,Y,'bo',X,Y_pred[1],'ro')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.show()
-'''
 
+'''
+----------------------------------------
 #create the test set
+----------------------------------------
+'''
 N=1000
 # seed random number generator
 seed(1)
@@ -124,7 +119,12 @@ for _ in range(1000):
 
     test_X.append(value)
 
+
 test_X = np.array(test_X, dtype=float)
+Fx = np.ones((N,5))
+for i in range(5):
+    for j in range(20):
+        Fx[j,i] = math.pow(test_X[j], i)
 
 #noise
 noise = gn.getNoise(N,mean,variance)
@@ -133,10 +133,10 @@ noise = gn.getNoise(N,mean,variance)
 Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
 
 #theta predicted using the least squares method
-thetaPredicted = ls.getY(N,test_X,Y_test)
+thetaPredicted, Fx = ls.getY(N,Fx,Y_test)
 
 #predicted y values over the testing set
-Y_pred_test = np.dot(thetaPredicted,test_X.reshape(1,N))
+Y_pred_test = np.dot(thetaPredicted.T,Fx.T)
 
 #mean square error over test set
 MSE_test = m.MSE(Y_pred_test,Y_test,N)

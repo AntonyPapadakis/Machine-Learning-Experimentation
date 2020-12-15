@@ -1,23 +1,23 @@
 import numpy as np
-import math
 
 '''
 Getting the theta and Y prediction using the least squares
 method and linear regression
 '''
-def getY(N,X,Y):
+def getY(N,Fx,Y):
 
-    extend = np.ones((2, N))
+    extend = np.ones((N,6))
 
-    extend[0,1:N] = X[1:N]
-    X=extend
-    X=X.T
-    XT = X.T
-    inv = np.linalg.inv(np.dot(XT, X))
 
-    temp = np.dot(inv, XT)
+    extend[0:N,0:5] = Fx[0:N,0:5]
+    Fx=extend
+    FxT = Fx.T
+
+    inv = np.linalg.pinv(np.dot(FxT,Fx))
+
+    temp = np.dot(inv, FxT)
 
     thetaPrediction = np.dot(temp, Y)
 
 
-    return thetaPrediction
+    return (thetaPrediction, Fx)
