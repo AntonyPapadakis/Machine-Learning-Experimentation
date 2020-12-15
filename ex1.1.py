@@ -4,6 +4,9 @@ import gaussianNoise as gn
 import linearRegression as lr
 import leastSquaresEstimate as ls
 import meanSquareError as m
+from random import random
+from random import seed
+import matplotlib.pyplot as plt
 
 '''
 -------------------------------------------------------------------------------------------
@@ -67,29 +70,92 @@ N=20
 start=0
 end=2
 
-points = p.getPoints(N,start,end)
-#print(points)
+X = p.getPoints(N,start,end)
 
 #noise
 variance=0.1
 mean=0
 noise = gn.getNoise(N,mean,variance)
-#print(noise)
 
 #get the yn's
-Y = lr.getY(N, points, noise, thetaTransposed).T
-#print(Y)
+Y = lr.getY(N, X, noise, thetaTransposed).T
 
 #there are more data points than there are parameters to be determined
-thetaPredicted = ls.getY(N,points,Y)
-#print(thetaPredicted)
+thetaPredicted = ls.getY(N,X,Y)
 
-
+#predicted y values
+Y_pred = np.dot(thetaPredicted,X.reshape(1,N))
 
 #mean square error over training set
-msq_error = 0
-
-Y_pred = np.dot(thetaPredicted,points.reshape(1,20))
 MSE = m.MSE(Y_pred,Y,N)
 
 print("the MSE is:", MSE)
+#blue for actual values red for predicted
+plt.figure(num=1)
+plt.title("training set")
+plt.plot(X,Y,'bo',X,Y_pred[0],'ro')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+
+'''
+plt.figure(num=2)
+plt.title("training set")
+plt.plot(X,Y,'bo',X,Y_pred[1],'ro')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+'''
+
+#create the test set
+N=1000
+# seed random number generator
+seed(1)
+# generate 1000 random numbers between 0-2
+upper_bound = 2
+lower_bound = 0
+test_X=[]
+for _ in range(1000):
+
+    if lower_bound != 0:
+        value = random()*(upper_bound-lower_bound)*lower_bound
+    else:
+        value = random()*upper_bound
+
+    test_X.append(value)
+
+test_X = np.array(test_X, dtype=float)
+
+#noise
+noise = gn.getNoise(N,mean,variance)
+
+#get the yn's
+Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
+
+#theta predicted using the least squares method
+thetaPredicted = ls.getY(N,test_X,Y_test)
+
+#predicted y values over the testing set
+Y_pred_test = np.dot(thetaPredicted,test_X.reshape(1,N))
+
+#mean square error over test set
+MSE_test = m.MSE(Y_pred_test,Y_test,N)
+
+print("the MSE for the test set is:", MSE_test)
+
+#blue for actual values red for predicted
+plt.figure(num=3)
+plt.title("test set 1 ")
+plt.plot(test_X,Y_test,'bo',test_X,Y_pred_test[0],'ro')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+
+'''
+plt.figure(num=4)
+plt.title("test set 2 ")
+plt.plot(test_X,Y_test,'bo',test_X,Y_pred_test[1],'ro')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+'''
