@@ -69,7 +69,7 @@ N=20
 start=0
 end=2
 
-X, Fx = p.getPoints(N,start,end)
+X, Fx = p.getPoints(N,start,end,6)
 
 #noise
 variance=0.1
@@ -80,7 +80,7 @@ noise = gn.getNoise(N,mean,variance)
 Y = lr.getY(N, X, noise, thetaTransposed).T
 
 #there are more data points than there are parameters to be determined
-thetaPredicted, Fx = ls.getY(N,Fx,Y)
+thetaPredicted, Fx = ls.getY(N,Fx,Y,6)
 
 #predicted y values
 Y_pred = np.dot(thetaPredicted.T,Fx.T)
@@ -121,8 +121,8 @@ for _ in range(1000):
 
 
 test_X = np.array(test_X, dtype=float)
-Fx = np.ones((N,5))
-for i in range(5):
+Fx = np.ones((N,6))
+for i in range(6):
     for j in range(20):
         Fx[j,i] = math.pow(test_X[j], i)
 
@@ -133,7 +133,7 @@ noise = gn.getNoise(N,mean,variance)
 Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
 
 #theta predicted using the least squares method
-thetaPredicted, Fx = ls.getY(N,Fx,Y_test)
+thetaPredicted, Fx = ls.getY(N,Fx,Y_test,6)
 
 #predicted y values over the testing set
 Y_pred_test = np.dot(thetaPredicted.T,Fx.T)

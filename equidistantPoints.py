@@ -4,8 +4,9 @@ import math
 
 '''
 Getting N equidistant points
+degree corresponds to the polynomial
 '''
-def getPoints(N,start,end):
+def getPoints(N,start,end,degree):
 
     maxDistance = end - start
 
@@ -14,8 +15,8 @@ def getPoints(N,start,end):
 
     points = np.arange(start,end,pointDistance)
 
-    Fx = np.ones((N,5))
-    for i in range(5):
+    Fx = np.ones((N,degree))
+    for i in range(degree):
         for j in range(20):
             Fx[j,i] = math.pow(points[j],i)
 
