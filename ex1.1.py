@@ -123,7 +123,7 @@ for _ in range(1000):
 test_X = np.array(test_X, dtype=float)
 Fx = np.ones((N,6))
 for i in range(6):
-    for j in range(20):
+    for j in range(N):
         Fx[j,i] = math.pow(test_X[j], i)
 
 #noise

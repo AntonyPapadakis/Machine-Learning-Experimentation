@@ -6,7 +6,7 @@ Y is the column vector containing the set of yns and
 Y_pred is the predicted ys represented in a l x N array 
 where N is the number of points in the training set
 '''
-def MSE(Y_pred,Y,N):
+def MSE(Y_pred,Y,N, verbose=False):
 
     temp = []
     for i in range(0, len(Y_pred)):
@@ -14,7 +14,8 @@ def MSE(Y_pred,Y,N):
         msq_error=0
         for i in range(0, N):
             sq_error = math.pow(sub[0,i], 2)
-            print("the square error for n = ",i,"is: ",sq_error)
+            if verbose :
+                print("the square error for n = ",i,"is: ",sq_error)
             msq_error += sq_error
         msq_error = msq_error/N
         temp.append(msq_error)
