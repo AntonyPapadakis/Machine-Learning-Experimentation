@@ -8,7 +8,6 @@ from random import random
 from random import seed
 import matplotlib.pyplot as plt
 import math
-from scipy.stats import norm
 
 #N=20 equidistant points in the interval [0,2]
 N=20
@@ -42,7 +41,7 @@ real_variance = np.var(Y)
 #create the test set
 ----------------------------------------
 '''
-N=1000
+N=10000
 # seed random number generator
 seed(1)
 # generate 1000 random numbers between 0-2
@@ -74,7 +73,7 @@ Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
 
 
 #ridge regression
-lam = {0, 0.5, 0.002, 50, 1, 2, 10, math.pow(np.var(noise),2) / math.pow(theta[0],2) }
+lam = {0, 0.5, 0.002, 0.005, 50, 1, 2, 10, math.pow(variance,2) / math.pow(theta[0],2) }
 
 for l in lam:
 
@@ -105,7 +104,7 @@ for l in lam:
     '''
     second step of the experiment using N=1000
     '''
-    N=1000
+    N=10000
 
 
     #theta predicted using the least squares method

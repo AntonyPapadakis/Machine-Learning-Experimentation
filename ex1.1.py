@@ -78,6 +78,7 @@ noise = gn.getNoise(N,mean,variance)
 
 #get the yn's
 Y = lr.getY(N, X, noise, thetaTransposed).T
+Y1 = lr.getYNonoise(N, X, noise, thetaTransposed)
 
 #there are more data points than there are parameters to be determined
 thetaPredicted, Fx = ls.getY(N,Fx,Y,6)
@@ -92,7 +93,7 @@ print("the MSE is:", MSE)
 #blue for actual values red for predicted
 plt.figure(num=1)
 plt.title("training set")
-plt.plot(X,Y,'bo',X,Y_pred[0],'ro')
+plt.plot(X,Y1[0],'bo',X,Y_pred[0],'ro',X,Y,'go')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
@@ -131,6 +132,8 @@ noise = gn.getNoise(N,mean,variance)
 
 #get the yn's
 Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
+Y1 = lr.getYNonoise(N, test_X, thetaTransposed)
+
 
 #theta predicted using the least squares method
 thetaPredicted, Fx = ls.getY(N,Fx,Y_test,6)
@@ -146,7 +149,7 @@ print("the MSE for the test set is:", MSE_test)
 #blue for actual values red for predicted
 plt.figure(num=3)
 plt.title("test set 1 ")
-plt.plot(test_X,Y_test,'bo',test_X,Y_pred_test[0],'ro')
+plt.plot(test_X,Y1[0],'bo',test_X,Y_test,'go',test_X,Y_pred_test[0],'ro')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()

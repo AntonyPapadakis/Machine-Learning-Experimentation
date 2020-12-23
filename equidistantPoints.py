@@ -17,7 +17,7 @@ def getPoints(N,start,end,degree):
 
     Fx = np.ones((N,degree))
     for i in range(degree):
-        for j in range(20):
+        for j in range(N):
             Fx[j,i] = math.pow(points[j],i)
 
     return (points, Fx)

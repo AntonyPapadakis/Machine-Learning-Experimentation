@@ -7,7 +7,7 @@ method and linear regression
 def getY(N,Fx,Y,degree,lam=0):
 
     #for ridge regression
-    lI = lam*np.ones((degree,degree))
+    lI = lam*np.identity(degree)
 
 
     extend = np.ones((N,degree))
