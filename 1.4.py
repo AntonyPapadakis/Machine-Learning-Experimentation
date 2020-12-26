@@ -20,7 +20,7 @@ def generate_y(x, th, s_n, m_n):
 def m_th_y(th_0, s_n, s_th, phis, ys):
     # find mu theta given y
     id = np.identity(th_0.shape[0])
-    temp1 = 1/s_n * inv((1 / s_th) * id + (1 / s_n) * phis.T @ phis)
+    temp1 = 1 / s_n * inv((1 / s_th) * id + (1 / s_n) * phis.T @ phis)
     temp2 = phis.T @ (ys - phis @ th_0)
     res = th_0 + temp1 @ temp2
     return res
@@ -38,7 +38,7 @@ def get_s_y_sq(x, s_n, s_th, phis):
     res = s_n + (temp1 @ temp2) @ phi
     return res
 
-np.random.seed(123123123)
+np.random.seed(0)
 theta_true = np.array([0.2, -1, 0.9, 0.7, 0, -0.2])
 
 s_ns = [0.05, 0.15]
@@ -50,10 +50,10 @@ for s_n in s_ns:
     # form training set
     phis = np.zeros((N, theta_true.shape[0]))
     ys = np.zeros(N)
+    x_train = np.linspace(0,2, N)
     for i in range(0, N):
-        x = np.random.uniform(0, 2)
-        phi = x_to_phi(x)
-        y = generate_y(x, theta_true, s_n, m_n)
+        phi = x_to_phi(x_train[i])
+        y = generate_y(x_train[i], theta_true, s_n, m_n)
         phis[i, :] = phi
         ys[i] = y
 
@@ -84,6 +84,7 @@ for s_n in s_ns:
     plt.title("Sigma noise: %.2f, Number of training points: %d" % (s_n, N))
     plt.scatter(x_for_true, true_y, color='red', marker='.', s=1)
     plt.errorbar(x_test, pred_y, yerr=err_y, fmt='o')
+    plt.savefig("1.4_%s_%s.png" % (s_n, N))
     plt.show()
 
 
