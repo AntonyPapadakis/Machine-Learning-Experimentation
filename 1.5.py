@@ -37,7 +37,7 @@ def get_s_y_sq(x, s_n, s_th, phis):
     res = s_n + (temp1 @ temp2) @ phi
     return res
 
-np.random.seed(123123123)
+np.random.seed(0)
 theta_zero = np.array([10.54, 0.465, 0.0087, -0.093, 0, -0.004])
 theta_true = np.array([0.2, -1, 0.9, 0.7, 0, -0.2])
 
@@ -50,10 +50,10 @@ for s_th in s_th_list:
         # form training set
         phis = np.zeros((N, theta_zero.shape[0]))
         ys = np.zeros(N)
+        x_train = np.linspace(0, 2, N)
         for i in range(0, N):
-            x = np.random.uniform(0, 2)
-            phi = x_to_phi(x)
-            y = generate_y(x, theta_true, s_n, m_n)
+            phi = x_to_phi(x_train[i])
+            y = generate_y(x_train[i], theta_true, s_n, m_n)
             phis[i, :] = phi
             ys[i] = y
         # perform Bayesian Inference
@@ -82,6 +82,7 @@ for s_th in s_th_list:
         plt.title("Sigma theta: %.2f, Number of training points: %d" % (s_th, N))
         plt.scatter(x_for_true, true_y, color='red', marker='.', s=1)
         plt.errorbar(x_test, pred_y, yerr=err_y, fmt='o')
+        plt.savefig("1.5_%s_%s.png" % (s_th, N))
         plt.show()
 
 
