@@ -11,7 +11,7 @@ def load_dataset(fname):
     labels, indexed_data = np.unique(my_data[:, -1], return_inverse=True)
     my_data_labels = np.array(indexed_data)
     dataset = np.hstack((my_data_feats, my_data_labels[:, None]))
-    return [dataset, labels.shape[0], my_data_feats.shape[1]]
+    return [dataset, labels.shape[0], my_data_feats.shape[1], labels]
 
 def transform_labels(dataset, lb):
     # in order to transform the problem to a binary classification
@@ -19,8 +19,6 @@ def transform_labels(dataset, lb):
     # return a copy of the original dataset with the transformed labels
     t_dataset = dataset.copy()
     transf = np.where(t_dataset[:, -1].astype(int) == lb, 1, -1)
-    # for perceptron_classifier_w use 1 and 0
-    # transf = np.where(dataset[:, -1].astype(int) == lb, 1, 0)
     t_dataset[:, -1] = transf[:]
     return t_dataset
 
@@ -36,52 +34,28 @@ def perceptron_classifier(patterns, targets, lr):
     for j in range(0, epochs):
         errors = 0
         for i in range(t_aug_patterns.shape[0]):
-            y = np.sign(np.dot(weights, t_aug_patterns[i, :]))
+            y = np.dot(weights, t_aug_patterns[i, :])
             if y <= 0:
                 errors += 1
                 weights = weights + (lr * t_aug_patterns[i, :])
         acc = (num_patterns - errors) / num_patterns
-        print('Epoch %d: Accuracy = %f, errors = %d' % (j + 1, acc, errors))
         if errors == 0:
-            print("Converged after epoch %d" % (j + 1))
+            print("Converged at epoch %d" % (j + 1))
             break
+        if errors != 0 and j >= epochs -1:
+            print("Not converged")
+    print('Epoch %d: Accuracy = %f, errors = %d' % (j + 1, acc, errors))
     return weights[:-1], weights[-1]
 
-def perceptron_classifier_w(patterns, targets, lr):
-    # wikipedia implementation
-    epochs = 100
-    bias = 0
-    weights = np.zeros(patterns.shape[1])
-    for j in range(0, epochs):
-        sum_error = 0.0
-        for i in range(patterns.shape[0]):
-            y = np.dot(weights, patterns[i, :])
-            y += bias
-            pred_y = 1 if y > 0 else 0
-            error = targets.item(i) - pred_y
-            sum_error += abs(error)
-            bias = bias + lr * error
-            weights = weights + (lr * error * patterns[i, :])
-        print('>epoch=%d, lrate=%.3f, error=%.3f' % (j, lr, sum_error))
-        if sum_error == 0:
-            print("Converged")
-            break
-    return [weights, bias]
-
-def min_max_scaling(x):
-    # min max scaling per feature
-    for i in range(0, x.shape[1]):
-        x[:, i] = 2 * (x[:, i] - x[:, i].min()) / (x[:, i].max() - x[:, i].min()) - 1
-    return x
-
-
-dataset, num_classes, num_feats = load_dataset('iris.data')
+# load dataset
+dataset, num_classes, num_feats, labels_str = load_dataset('iris.data')
 
 # with lb we choose which class is 1 and all others are considered -1
+# for example if lb = 0
 lb_list = [0, 1, 2]
 lr = 1
 for lb in lb_list:
-    print(lb)
+    print('For labeling-> %s = 1 Others = -1' % (labels_str[lb].decode("utf-8")))
     tr_dataset = transform_labels(dataset, lb)
 
     data = tr_dataset[:, :num_feats]
