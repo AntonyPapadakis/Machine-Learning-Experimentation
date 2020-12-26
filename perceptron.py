@@ -1,0 +1,93 @@
+import numpy as np
+from numpy import genfromtxt
+
+
+def load_dataset(fname):
+    # loads a dataset assuming the last column is the labels
+    # return the number of labels as well as the number of feats
+    my_data = genfromtxt(fname, delimiter=',', dtype='S', encoding=None)
+    num_feats = my_data.shape[1]-1
+    my_data_feats = np.array(my_data[:, :num_feats], dtype='float32')
+    labels, indexed_data = np.unique(my_data[:, -1], return_inverse=True)
+    my_data_labels = np.array(indexed_data)
+    dataset = np.hstack((my_data_feats, my_data_labels[:, None]))
+    return [dataset, labels.shape[0], my_data_feats.shape[1]]
+
+def transform_labels(dataset, lb):
+    # in order to transform the problem to a binary classification
+    # change lb label to 1 and all others to -1
+    # return a copy of the original dataset with the transformed labels
+    t_dataset = dataset.copy()
+    transf = np.where(t_dataset[:, -1].astype(int) == lb, 1, -1)
+    # for perceptron_classifier_w use 1 and 0
+    # transf = np.where(dataset[:, -1].astype(int) == lb, 1, 0)
+    t_dataset[:, -1] = transf[:]
+    return t_dataset
+
+def perceptron_classifier(patterns, targets, lr):
+    # implementation of a single neuron perceptron as described in the lecture notes
+    # try to converge for 10k epochs
+    # return the weights and bias(w0) after 10k epochs or if converged
+    epochs = 10000
+    aug_patterns = np.hstack((patterns, -1 * np.ones((patterns.shape[0], 1))))
+    t_aug_patterns = aug_patterns[:, :] * targets[:, None]
+    weights = np.zeros(t_aug_patterns.shape[1])
+    num_patterns = patterns.shape[0]
+    for j in range(0, epochs):
+        errors = 0
+        for i in range(t_aug_patterns.shape[0]):
+            y = np.sign(np.dot(weights, t_aug_patterns[i, :]))
+            if y <= 0:
+                errors += 1
+                weights = weights + (lr * t_aug_patterns[i, :])
+        acc = (num_patterns - errors) / num_patterns
+        print('Epoch %d: Accuracy = %f, errors = %d' % (j + 1, acc, errors))
+        if errors == 0:
+            print("Converged after epoch %d" % (j + 1))
+            break
+    return weights[:-1], weights[-1]
+
+def perceptron_classifier_w(patterns, targets, lr):
+    # wikipedia implementation
+    epochs = 100
+    bias = 0
+    weights = np.zeros(patterns.shape[1])
+    for j in range(0, epochs):
+        sum_error = 0.0
+        for i in range(patterns.shape[0]):
+            y = np.dot(weights, patterns[i, :])
+            y += bias
+            pred_y = 1 if y > 0 else 0
+            error = targets.item(i) - pred_y
+            sum_error += abs(error)
+            bias = bias + lr * error
+            weights = weights + (lr * error * patterns[i, :])
+        print('>epoch=%d, lrate=%.3f, error=%.3f' % (j, lr, sum_error))
+        if sum_error == 0:
+            print("Converged")
+            break
+    return [weights, bias]
+
+def min_max_scaling(x):
+    # min max scaling per feature
+    for i in range(0, x.shape[1]):
+        x[:, i] = 2 * (x[:, i] - x[:, i].min()) / (x[:, i].max() - x[:, i].min()) - 1
+    return x
+
+
+dataset, num_classes, num_feats = load_dataset('iris.data')
+
+# with lb we choose which class is 1 and all others are considered -1
+lb_list = [0, 1, 2]
+lr = 1
+for lb in lb_list:
+    print(lb)
+    tr_dataset = transform_labels(dataset, lb)
+
+    data = tr_dataset[:, :num_feats]
+    targets = tr_dataset[:, -1].astype(int)
+
+    w, bias = perceptron_classifier(data, targets, lr)
+    print('weights: ', w)
+    print('bias(w0): ', bias)
+
