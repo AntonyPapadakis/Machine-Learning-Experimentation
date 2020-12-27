@@ -36,20 +36,23 @@ def train_folds_merge(folds, test_id):
     return np.vstack(list_of_splits)
 
 
-def predictClass_Parametrics(x, mus, sigmas, number_of_classes, class_probabilities):
+def predictClass(x, mus, sigmas, X_train, number_of_classes, class_probabilities):
     """
-    For every parametric model, it calculates the likelihood for each class, and picks the class with max likelihood.
+    For every model, it calculates the likelihood for each class, and picks the class with max likelihood.
 
     :param x: The datapoint we want to derive the class for.
     :param mus: A list with the mean vector for each method. First three are for first class, next three for
     second class, etc.
     :param sigmas: A list with the covariance matrix for each method. Same as mus.
+    :param X_train: The train set - needed for Parzen Windows method.
     :param number_of_classes: The number of different classes in the dataset.
     :param class_probabilities: An array with the probability of each class.
     :return: A vector with the predicted classes by each model.
     """
 
     predictions = []
+
+    # For the parametric methods
     number_of_models = int(len(mus) / 2)
     for i in range(0, number_of_models):
         method_likelihoods = []
@@ -59,6 +62,15 @@ def predictClass_Parametrics(x, mus, sigmas, number_of_classes, class_probabilit
             prob = gaussian(x, mus[index], sigmas[index]) * class_probabilities[j]  # The beyes classifier rule
             method_likelihoods.append(prob)
         predictions.append(np.argmax(method_likelihoods))
+
+    # For the non-parametric method
+    method_likelihoods = []
+    for j in range(number_of_classes):
+        sumlog_pi = question_d(X_train, x)
+        p_i = sumlog_pi * class_probabilities[j]  # The beyes classifier rule
+        method_likelihoods.append(p_i)
+
+    predictions.append(np.argmax(method_likelihoods))
 
     return predictions
 
@@ -84,7 +96,7 @@ def main():
         number_of_classes = len(np.unique(y_train))
         class_probabilities = np.zeros(number_of_classes)  # array with the probability for each class to exist
 
-        # Lists with model parameters, utilized in predictClass_Parametrics().
+        # Lists with model parameters, utilized in predictClass().
         mus = []
         sigmas = []
 
@@ -115,19 +127,7 @@ def main():
         # Testing:
         for i in range(X_test.shape[0]):
             # Take the predictions from all methods
-
-            # For the parametric methods
-            preds = predictClass_Parametrics(X_test[i], mus, sigmas, number_of_classes, class_probabilities)
-
-            # For the non-parametric method
-            method_likelihoods = []
-            for j in range(number_of_classes):
-                # method_likelihoods.append(question_d_multidimensional(X_train, X_test[i]))  # TODO: let only marginal method
-                sumlog_pi = np.sum(np.log(question_d(X_train, X_test[i])))  # The naive beyes rule
-                p_i = sumlog_pi * class_probabilities[j]  # The beyes classifier rule
-                method_likelihoods.append(p_i)
-
-            preds.append(np.argmax(method_likelihoods))
+            preds = predictClass(X_test[i], mus, sigmas, X_train, number_of_classes, class_probabilities)
 
             # Evaluate these predictions
             target = y_test[i]

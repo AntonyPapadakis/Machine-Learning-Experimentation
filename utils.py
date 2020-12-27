@@ -42,8 +42,7 @@ def gaussian(X, mu, sigma, dim=None):
     #from scipy.stats import multivariate_normal
     # gaussian = multivariate_normal.pdf(X, mean=mu, cov=sigma)#, allow_singular=True)
 
-    return probability if probability != 0 else 10 ** -100
-    # TODO: hardcoded min because log(0) threw warning and inf result.
+    return probability if probability != 0 else 10 ** -100  # hardcoded min because log(0) threw warning and inf result.
 
 
 def question_a(X):
@@ -123,7 +122,7 @@ def question_d(X, x_var):
             x_tmp = (X[i, j] - x_var[j])/h
             sum_over_N += gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
 
-        sum_over_d += np.log(sum_over_N)
+        sum_over_d += np.log(sum_over_N)  # The naive beyes rule with log probability
 
     likelihood = scale_factor + sum_over_d
 
