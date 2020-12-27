@@ -18,7 +18,7 @@ def gof(X, k, mus=None, sigmas=None, aic=False):
             log_pi = np.log(p_i)
         else:
             p_i = question_d(X, x)
-            log_pi = np.sum(np.log(p_i))
+            log_pi = p_i #np.sum(np.log(p_i))
             # TODO Problem: the metric gets 10 times larger
 
         log_theta += log_pi
@@ -78,12 +78,12 @@ def main():
 
         # -------- Goodness of fits
         akaike_param_number = mus_a.shape[0] + 1  # mean's params plus the variance param
-        print("Class y={}, assumption a, average results: AIC={} and BIC={}".
-              format(i, gof(subset, akaike_param_number, mus_a, sigmas_a, aic=True),
+        print("Class y={}, assumption a, average results (k={}): AIC={} and BIC={}".
+              format(i, akaike_param_number, gof(subset, akaike_param_number, mus_a, sigmas_a, aic=True),
                      gof(subset, akaike_param_number, mus_a, sigmas_a)))
 
         m = mus_b.shape[0]
-        akaike_param_number = m + m(m + 1) / 2  # mean's params plus the covariance matrix's params (symmetric)
+        akaike_param_number = m + m*(m + 1) / 2  # mean's params plus the covariance matrix's params (symmetric)
         print("Class y={}, assumption b, average results (k={}): AIC={} and BIC={}".
               format(i, akaike_param_number, gof(subset, akaike_param_number, mus_b, sigmas_b, aic=True),
                      gof(subset, akaike_param_number, mus_b, sigmas_b)))

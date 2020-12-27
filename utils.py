@@ -37,6 +37,11 @@ def gaussian(X, mu, sigma, dim=None):
         nominator = np.exp(-0.5 * np.dot(z_score.T, z_score))
 
     probability = (nominator / denominator)
+
+    # uncomment below to debug overflow error
+    #from scipy.stats import multivariate_normal
+    # gaussian = multivariate_normal.pdf(X, mean=mu, cov=sigma)#, allow_singular=True)
+
     return probability if probability != 0 else 10 ** -100
     # TODO: hardcoded min because log(0) threw warning and inf result.
 
@@ -48,7 +53,7 @@ def question_a(X):
     :param X: The datapoints that belong to a specific class
     :return: mean vector and covariance matrix
     """
-    mus = np.mean(X, axis=0)
+    mus = X.mean(axis=0)
 
     diff = (X - mus)
     su = np.sum(np.dot(diff.T, diff)) / (8 * X.shape[0])
@@ -102,7 +107,7 @@ def question_d_multidimensional(X, x_i):
 
     :param X: The datapoints that belong to a specific class.
     :param x_i: The variable we want to derive the likelihood for.
-    :return: the result of the pdf for some sample x_i.
+    :return: the result of the pdf for some sample x_var.
     """
     # TODO: remove this function?
     h = np.sqrt(X.shape[0])
@@ -119,30 +124,45 @@ def question_d_multidimensional(X, x_i):
     return sum / denominator
 
 
-def question_d(X, x_i):
+def question_d(X, x_var):
     """
     Features are i.i.d. with unknown marginal distributions.
     Window kernels are standard gaussians.
 
     :param X: The datapoints that belong to a specific class.
-    :param x_i: The variable we want to derive the likelihood for.
+    :param x_var: The variable we want to derive the likelihood for.
     :return: the iid result vector of the pdf for some sample x_i.
     """
+    N = X.shape[0]
+    d = X.shape[1]
 
-    h = np.sqrt(X.shape[0])
     kernel_mu = 0
     kernel_sigma = 1
 
-    denominator = h * X.shape[0]
+    h = np.sqrt(N)
+    scale_factor = - d * np.log(h * N)
 
-    marginals = []
-    for j in range(X.shape[1]):
-        summ = 0
-        for i, x in enumerate(X[:, j]):  # for each datapoint in X
-            x_tmp = (x_i - x) / h
-            kernel = gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
-            summ += kernel
+    sum_over_d = 0
+    for j in range(d):
+        sum_over_N = 0
+        for i in range(N):
+            x_tmp = (X[i, j] - x_var[j])/h
+            sum_over_N += gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
 
-        marginals.append(summ / denominator)
+        sum_over_d += np.log(sum_over_N)
 
-    return marginals
+    likelihood = scale_factor + sum_over_d
+
+    #marginals = []
+    #for i, x in enumerate(X):  # for each datapoint
+#
+    #for j in range(X.shape[1]):  # for each feature
+    #    summ = 0
+    #    for i, x in enumerate(X[:, j]):  # for each datapoint in each feature
+    #        x_tmp = (x_var - x) / h
+    #        kernel = gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
+    #        summ += kernel
+#
+    #    marginals.append(summ / denominator)
+#
+    return likelihood
