@@ -82,7 +82,7 @@ for s_th in s_th_list:
         plt.title("Sigma theta: %.2f, Number of training points: %d" % (s_th, N))
         plt.scatter(x_for_true, true_y, color='red', marker='.', s=1)
         plt.errorbar(x_test, pred_y, yerr=err_y, fmt='o')
-        plt.savefig("1.5_%s_%s.png" % (s_th, N))
+        # plt.savefig("1.5_%s_%s.png" % (s_th, N))
         plt.show()
 
 

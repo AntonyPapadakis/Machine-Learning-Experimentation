@@ -41,9 +41,11 @@ def cross_val_split(dataset, folds):
     splits = np.array_split(cv_dataset, folds)
     return splits
 
+# assuming that the dataset files are in the same folder
 dataset_names = ['iris.data', 'pima-indians-diabetes.data']
 
 for d_name in dataset_names:
+    print('DATASET: %s' % (d_name))
     dataset, num_classes, num_feats = load_dataset(d_name)
     # remove duplicate rows
     a = dataset
@@ -86,17 +88,17 @@ for d_name in dataset_names:
             acc[i] = sums[i] / pred.shape[0]
         # store the mean accuracy of cross validation sets for each k
         mean_accs[k - 1] = np.mean(acc)
-    print (mean_accs)
 
     # plot the results
     xs = np.arange(1, kmax + 1)
     plt.plot(xs, mean_accs)
     k_best = np.argmax(mean_accs) + 1
+    print('BEST K: %d'% (k_best))
     maxim = plt.scatter(k_best, np.max(mean_accs), marker='o', color='red')
     plt.legend([maxim], ["Best k"])
     plt.title('Accuracy vs Number of nearest neighbors')
     plt.xlabel('Accuracy')
     plt.xlabel('Number of nearest neighbors')
-    plt.savefig("knn_%s.png" % (d_name))
+    # plt.savefig("knn_%s.png" % (d_name))
     plt.show()
 

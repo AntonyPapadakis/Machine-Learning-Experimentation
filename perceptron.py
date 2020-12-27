@@ -4,7 +4,7 @@ from numpy import genfromtxt
 
 def load_dataset(fname):
     # loads a dataset assuming the last column is the labels
-    # return the number of labels as well as the number of feats
+    # return the number of labels, the number of feats and the labels as strings
     my_data = genfromtxt(fname, delimiter=',', dtype='S', encoding=None)
     num_feats = my_data.shape[1]-1
     my_data_feats = np.array(my_data[:, :num_feats], dtype='float32')
@@ -51,7 +51,7 @@ def perceptron_classifier(patterns, targets, lr):
 dataset, num_classes, num_feats, labels_str = load_dataset('iris.data')
 
 # with lb we choose which class is 1 and all others are considered -1
-# for example if lb = 0
+# for example if lb = 0 Iris-setosa will be labeled with 1 and the others with -1
 lb_list = [0, 1, 2]
 lr = 1
 for lb in lb_list:

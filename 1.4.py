@@ -84,7 +84,7 @@ for s_n in s_ns:
     plt.title("Sigma noise: %.2f, Number of training points: %d" % (s_n, N))
     plt.scatter(x_for_true, true_y, color='red', marker='.', s=1)
     plt.errorbar(x_test, pred_y, yerr=err_y, fmt='o')
-    plt.savefig("1.4_%s_%s.png" % (s_n, N))
+    # plt.savefig("1.4_%s_%s.png" % (s_n, N))
     plt.show()
 
 
