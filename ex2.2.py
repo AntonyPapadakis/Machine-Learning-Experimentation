@@ -2,6 +2,9 @@ from utils import *
 
 
 def plotGoodness(aics, bics, num_of_models):
+    """
+    Plots a stacked bar graph. Bics are not used as their plot is rather similar.
+    """
     import matplotlib.pyplot as plt
     N = num_of_models
     aic_class_0 = aics[:num_of_models]
@@ -33,6 +36,15 @@ def plotGoodness(aics, bics, num_of_models):
 
 
 def gof(X, k, mus=None, sigmas=None, aic=False):
+    """
+    Calculates the goodness of fit for a model and a dataset. The k parameter is given as an arguement.
+    :param X: The dataset.
+    :param k: The penalty parameter for the equation.
+    :param mus: The means vector for a model.
+    :param sigmas: The sigma matrix for a model.
+    :param aic: A flag indicating whether AIC or BIC will be computed.
+    :return: Returns the Goodness of fit value.
+    """
     if aic:
         penalty = 2
     else:  # for bic
@@ -41,7 +53,6 @@ def gof(X, k, mus=None, sigmas=None, aic=False):
     log_theta = 0
 
     for i, x in enumerate(X):
-
         # Instead of calculating the log product, we do the sum of logs to avoid multiplying to 0.
         if mus is not None:
             p_i = gaussian(x, mus, sigmas)
@@ -57,6 +68,9 @@ def gof(X, k, mus=None, sigmas=None, aic=False):
 
 
 def main():
+    """
+    Dataset is split based on class, in order to derive underlying pdfs and the corresponding metrics of goodness of fit.
+    """
     data = loaddataset()
     X = data[:, :-1]
     y = data[:, -1:]

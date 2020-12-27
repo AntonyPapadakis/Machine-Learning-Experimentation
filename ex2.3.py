@@ -100,7 +100,10 @@ def predictClass(x, mus, sigmas, X_train, number_of_classes, class_probabilities
 
 
 def main():
-    print("hello")
+    """
+    Dataset is split in folds in order to implement k-fold cross validation, based on which the average accuracy is
+    computed. For each fold, the underlying pdfs are derived and accuracy is measured.
+    """
     data = loaddataset()
     folds = 5
     num_of_models = 4
