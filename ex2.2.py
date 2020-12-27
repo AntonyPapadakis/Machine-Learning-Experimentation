@@ -2,9 +2,7 @@ import numpy as np
 from utils import *
 
 
-def gof(X, mus=None, sigmas=None, aic=False):
-    k = X.shape[1]  # TODO: +1 for sigma for a, +8 for sigma for c etc or not?
-
+def gof(X, k, mus=None, sigmas=None, aic=False):
     if aic:
         penalty = 2
     else:  # for bic
@@ -25,8 +23,6 @@ def gof(X, mus=None, sigmas=None, aic=False):
 
         log_theta += log_pi
 
-
-
         if log_theta == 0:
             print("dsfsd")
 
@@ -35,9 +31,8 @@ def gof(X, mus=None, sigmas=None, aic=False):
     return round(gof, 2)
 
 
-def gof1(X, mus=None, sigmas=None, aic=False):
-    #TODO: remove this, it's just the parzen for d-space not 1-d.
-    k = X.shape[1]
+def gof1(X, k, mus=None, sigmas=None, aic=False):
+    # TODO: remove this, it's just the parzen for d-space not 1-d.
 
     if aic:
         penalty = 2
@@ -65,6 +60,7 @@ def gof1(X, mus=None, sigmas=None, aic=False):
 
     return round(gof, 2)
 
+
 def main():
     print("hello")
     data = loaddataset()
@@ -81,19 +77,31 @@ def main():
         mus_c, sigmas_c = question_c(subset)
 
         # -------- Goodness of fits
+        akaike_param_number = mus_a.shape[0] + 1  # mean's params plus the variance param
         print("Class y={}, assumption a, average results: AIC={} and BIC={}".
-                                        format(i, gof(subset, mus_a, sigmas_a, aic=True),gof(subset, mus_a, sigmas_a)))
-        print("Class y={}, assumption b, average results: AIC={} and BIC={}".
-                                        format(i, gof(subset, mus_b, sigmas_b, aic=True), gof(subset, mus_b, sigmas_b)))
-        print("Class y={}, assumption c, average results: AIC={} and BIC={}".
-                                        format(i, gof(subset, mus_c, sigmas_c, aic=True), gof(subset, mus_c, sigmas_c)))
-        print("Class y={}, assumption d, average results: AIC={} and BIC={}".
-                                        format(i, gof(subset, aic=True), gof(subset)))
+              format(i, gof(subset, akaike_param_number, mus_a, sigmas_a, aic=True),
+                     gof(subset, akaike_param_number, mus_a, sigmas_a)))
+
+        m = mus_b.shape[0]
+        akaike_param_number = m + m(m + 1) / 2  # mean's params plus the covariance matrix's params (symmetric)
+        print("Class y={}, assumption b, average results (k={}): AIC={} and BIC={}".
+              format(i, akaike_param_number, gof(subset, akaike_param_number, mus_b, sigmas_b, aic=True),
+                     gof(subset, akaike_param_number, mus_b, sigmas_b)))
+
+        akaike_param_number = mus_c.shape[0] + mus_c.shape[0]  # mean's params plus the variance diagonal
+        print("Class y={}, assumption c, average results (k={}): AIC={} and BIC={}".
+              format(i, akaike_param_number, gof(subset, akaike_param_number, mus_c, sigmas_c, aic=True),
+                     gof(subset, akaike_param_number, mus_c, sigmas_c)))
+
+        akaike_param_number = subset.shape[1] + subset.shape[1] + 1  # mean and variance diagonal  for kernel plus
+        # hypercube size
+        print("Class y={}, assumption d, average results (k={}): AIC={} and BIC={}".
+              format(i, akaike_param_number, gof(subset, akaike_param_number, aic=True), gof(subset, akaike_param_number)))
 
         print("----")
 
-        print("Class y={}, assumption d_multi, average results: AIC={} and BIC={}".
-                                        format(i, gof1(subset, aic=True), gof1(subset)))
+        print("Class y={}, assumption d_multi, average results (k={}): AIC={} and BIC={}".
+              format(i, akaike_param_number, gof1(subset, akaike_param_number, aic=True), gof1(subset, akaike_param_number)))
         print("test")
 
     print("hello")
