@@ -2,6 +2,10 @@ import numpy as np
 
 
 def loaddataset():
+    """
+    Reads the dataset file and returns the dataset as an array
+    :return: The dataset array.
+    """
     datafile = "../UCIdata-exercise1/pima-indians-diabetes.data"
     namesfile = "../UCIdata-exercise1/pima-indians-diabetes.names"
 
@@ -14,6 +18,14 @@ def loaddataset():
 
 
 def gaussian(X, mu, sigma, dim=None):
+    """
+    Calculates the gaussian probability for a given set.
+    :param X: The variable vector in the gaussian calculation.
+    :param mu: The mean of the wanted distribution.
+    :param sigma: The (co)variance of the wanted distribution.
+    :param dim: Indicator about whether we need the 1-dim or multi-dim gaussian case.
+    :return: The resulting likelihood.
+    """
     if dim != 1:
         x_len = len(X)
         denominator = (2 * np.pi) ** (x_len / 2) * np.sqrt(np.linalg.det(sigma))
@@ -25,16 +37,17 @@ def gaussian(X, mu, sigma, dim=None):
         nominator = np.exp(-0.5 * np.dot(z_score.T, z_score))
 
     probability = (nominator / denominator)
-    return probability if probability != 0 else 10 ** -100  # TODO: hardcoded limit because log(0) threw warning and inf result.
+    return probability if probability != 0 else 10 ** -100
+    # TODO: hardcoded min because log(0) threw warning and inf result.
 
 
 def question_a(X):
-    '''
+    """
     Covariance matrix is diagonal, with elements being equal, while the distribution is gaussian.
 
     :param X: The datapoints that belong to a specific class
     :return: mean vector and covariance matrix
-    '''
+    """
     mus = np.mean(X, axis=0)
 
     diff = (X - mus)
@@ -46,32 +59,29 @@ def question_a(X):
 
 
 def question_b(X):
-    '''
+    """
     Covariance matrix is non-diagonal, while the distribution is gaussian.
 
     :param X: The datapoints that belong to a specific class
     :return: mean vector and covariance matrix
-    '''
-    # TODO: how? isn't using np.cov wrong?
-    # TODO: is it copy paste this? https://stats.stackexchange.com/questions/351549/maximum-likelihood-estimators-multivariate-gaussian
-    # TODO: Also for the Sigma, the summation doesn't break the 8x8 shape?
-    # matrices SHOULD BE summed with each other and keep dimensions.
+    """
+
     mus = np.mean(X, axis=0)
 
     diff = (X - mus)
-    sigmas = np.cov(X, rowvar=False)  # TODO change
-    # sigmas = np.sum(np.dot(diff.T, diff)) / X.shape[0]
+    sigmas = np.dot(diff.T, diff) / X.shape[0]
 
     return mus, sigmas
 
 
 def question_c(X):
-    '''
+    """
     Features are i.i.d. with gaussian marginal distributions.
 
     :param X: The datapoints that belong to a specific class
     :return: mean vector and covariance matrix
-    '''
+    """
+
     mus = np.mean(X, axis=0)
 
     diff = (X - mus)
@@ -83,20 +93,22 @@ def question_c(X):
     return mus, sigmas
 
 
-def question_d_multi(X, x_i):
-    '''
+def question_d_multidimensional(X, x_i):
+    """
     Features are i.i.d. with unknown marginal distributions.
     Window kernels are standard gaussians.
+    This is the multi-dimensional case of PWs.
+    We can use integration to get a mean and variance from the pdf if needed.
 
-    :param X: The datapoints that belong to a specific class
-    :return: the result of the pdf for some sample x_i
-    '''
-
+    :param X: The datapoints that belong to a specific class.
+    :param x_i: The variable we want to derive the likelihood for.
+    :return: the result of the pdf for some sample x_i.
+    """
+    # TODO: remove this function?
     h = np.sqrt(X.shape[0])
-    kernel_mu = np.array([0 for j in range(X.shape[1])])
+    kernel_mu = np.array([0 for _ in range(X.shape[1])])
     kernel_sigma = np.eye(X.shape[1])
 
-    # x_i = 0  # TODO: it probably needs test values / new samples, prob make it an argument
     sum = 0
     for i, x in enumerate(X):  # for each datapoint in X
         x_tmp = (x_i - x) / h
@@ -104,20 +116,18 @@ def question_d_multi(X, x_i):
         sum += kernel
 
     denominator = (h ** X.shape[1]) * X.shape[0]
-    # TODO: This is the multi-dimensional case of PWs
-
-    # TODO: We can use integration to get a mean and variance from the pdf if needed
     return sum / denominator
 
 
 def question_d(X, x_i):
-    '''
+    """
     Features are i.i.d. with unknown marginal distributions.
     Window kernels are standard gaussians.
 
-    :param X: The datapoints that belong to a specific class
-    :return: the result of the pdf for some sample x_i
-    '''
+    :param X: The datapoints that belong to a specific class.
+    :param x_i: The variable we want to derive the likelihood for.
+    :return: the iid result vector of the pdf for some sample x_i.
+    """
 
     h = np.sqrt(X.shape[0])
     kernel_mu = 0
@@ -125,15 +135,14 @@ def question_d(X, x_i):
 
     denominator = h * X.shape[0]
 
-    # x_i = 0  # TODO: it probably needs test values / new samples, prob make it an argument
     marginals = []
     for j in range(X.shape[1]):
-        sum = 0
+        summ = 0
         for i, x in enumerate(X[:, j]):  # for each datapoint in X
             x_tmp = (x_i - x) / h
             kernel = gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
-            sum += kernel
+            summ += kernel
 
-        marginals.append(sum / denominator)
+        marginals.append(summ / denominator)
 
     return marginals
