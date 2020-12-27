@@ -10,13 +10,11 @@ def getY(N,Fx,Y,degree,lam=0):
     lI = lam*np.identity(degree)
 
 
-    extend = np.ones((N,degree))
+    #extend = np.ones((N,degree))
 
-    extend[0:N,0:degree] = Fx[0:N,0:degree]
-    Fx=extend
     FxT = Fx.T
 
-    inv = np.linalg.pinv(np.dot(FxT,Fx) + lI)
+    inv = np.linalg.inv(np.dot(FxT,Fx) + lI)
 
     temp = np.dot(inv, FxT)
 

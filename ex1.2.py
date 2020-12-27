@@ -39,20 +39,24 @@ real_mean = np.mean(Y_true)
 real_variance = np.var(Y_true)
 
 plt.figure(num=1)
-plt.title("real curve")
+plt.title("X vs Y")
 
-plt.plot(X_true, norm.pdf(Y_true), 'b-', lw=5, alpha=0.95, label='norm pdf')
+plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.95, label='norm pdf')
 
 plt.xlabel('X')
-plt.ylabel('probability')
+plt.ylabel('Y')
 plt.show()
 
-for degree in {3,11,6}: #3 for 2nd degree and 11 for 10th degree polynomial
+x = np.linspace(real_mean - 3*math.sqrt(real_variance), real_mean + 3*math.sqrt(real_variance), 100)
+
+
+
+for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
 
     plt.figure(num=degree)
-    plt.title("experiments' curves "+ str(degree-1) +" degree polynomial")
+    plt.title("experiments' X vs Y "+ str(degree-1) +" degree polynomial")
 
-    plt.plot(X_true, norm.pdf(Y_true), 'b-', lw=5, alpha=0.6, label='norm pdf')
+    plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.6, label='norm pdf')
 
     l_means = [] #list of means
     l_variances = [] #list of variance
@@ -78,7 +82,7 @@ for degree in {3,11,6}: #3 for 2nd degree and 11 for 10th degree polynomial
         l_variances.append(np.var(Y_pred))
 
         #curves
-        plt.plot(X, norm.pdf(Y), 'r-', lw=5, alpha=0.6, label='pdf experiments')
+        plt.plot(X, Y, 'r-', lw=5, alpha=0.6, label='pdf experiments')
 
 
         #mean square error over training set
@@ -86,19 +90,27 @@ for degree in {3,11,6}: #3 for 2nd degree and 11 for 10th degree polynomial
 
 
     plt.xlabel('X')
-    plt.ylabel('probability')
+    plt.ylabel('Y')
     plt.show()
 
     #green for actual values red for predicted
     plt.figure(num=degree-1)
-    plt.title("means/variances " + str(degree-1) + " degree polynomial")
+    plt.title("Curves " + str(degree-1) + " degree polynomial")
+
+
+    print(degree-1," polynomial case")
+    print("MSE ", MSE)
+    print("real variance", real_variance)
+    print("real mean", real_mean)
+    print("mean of means: ",sum(l_means)/len(l_means))
+    print("mean of variance: ", sum(l_variances)/len(l_variances))
 
     for j in range(0,100):
-        plt.plot(l_means[j], l_variances[j], 'ro')
+        plt.plot(x,norm.pdf(x,l_means[j], l_variances[j]), 'ro')
 
-    plt.plot(real_mean, real_variance, 'go')
-    plt.xlabel('mean')
-    plt.ylabel('variance')
+    plt.plot(x,norm.pdf(x,real_mean, real_variance), 'go')
+    plt.xlabel('X')
+    plt.ylabel('Probability')
     plt.show()
 
 
