@@ -1,4 +1,3 @@
-import numpy as np
 from utils import *
 
 
@@ -35,6 +34,31 @@ def train_folds_merge(folds, test_id):
 
     return np.vstack(list_of_splits)
 
+def plot_accuracies(accuracies, num_of_models):
+    """
+    Plots a graph with the accuracies on the y axis and the different models on the x axis.
+    """
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(1, 1, figsize=(15, 10), dpi=100)
+
+    xs = np.arange(1, num_of_models + 1)
+    ax.plot(xs, accuracies)
+
+    acc_best = np.argmax(accuracies) + 1
+    maxim = ax.scatter(acc_best, np.max(accuracies), marker='o', color='red')
+
+    ax.grid(b=True, color='grey', linestyle='-.', linewidth=0.5, zorder=0)
+
+    ax.legend([maxim], ["Best Accuracy"])
+    ax.set_title('Accuracy vs Algorithm selected')
+    ax.set_ylabel('Accuracy')
+    ax.set_xlabel('Methods')
+    ax.set_xticklabels(['quest_a', 'quest_b', 'quest_c', 'quest_d'])
+    ax.set_xticks(xs)
+    plt.xticks(rotation=25)
+    # plt.savefig("knn_%s.png" % (d_name))
+    plt.show()
 
 def predictClass(x, mus, sigmas, X_train, number_of_classes, class_probabilities):
     """
@@ -79,6 +103,7 @@ def main():
     print("hello")
     data = loaddataset()
     folds = 5
+    num_of_models = 4
 
     data_splits = cross_val_split(data, folds)
     accuracies = np.zeros((4, folds), dtype=int)  # array with one row for each model and one column for each fold.
@@ -145,6 +170,10 @@ def main():
     print("Assumption B: {}%".format(round(accurates_counts_avg[1], 1)))
     print("Assumption C: {}%".format(round(accurates_counts_avg[2], 1)))
     print("Assumption D: {}%".format(round(accurates_counts_avg[3], 1)))
+
+
+    #---------------plot accuracies
+    plot_accuracies(accurates_counts_avg, num_of_models)
 
 
 if __name__ == "__main__":
