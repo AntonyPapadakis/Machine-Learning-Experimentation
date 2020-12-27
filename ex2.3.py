@@ -59,6 +59,7 @@ def plot_accuracies(accuracies, num_of_models):
     plt.xticks(rotation=25)
     # plt.savefig("knn_%s.png" % (d_name))
     plt.show()
+    plt.savefig("2.3.png")
 
 def predictClass(x, mus, sigmas, X_train, number_of_classes, class_probabilities):
     """

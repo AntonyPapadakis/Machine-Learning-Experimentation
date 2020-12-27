@@ -33,7 +33,7 @@ def plotGoodness(aics, bics, num_of_models):
     bars.legend((p1[0], p2[0]), ('AIC - 0', 'AIC - 1'))
 
     fig.show()
-
+    plt.savefig("2.2.png")
 
 def gof(X, k, mus=None, sigmas=None, aic=False):
     """
