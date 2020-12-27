@@ -98,32 +98,6 @@ def question_c(X):
     return mus, sigmas
 
 
-def question_d_multidimensional(X, x_i):
-    """
-    Features are i.i.d. with unknown marginal distributions.
-    Window kernels are standard gaussians.
-    This is the multi-dimensional case of PWs.
-    We can use integration to get a mean and variance from the pdf if needed.
-
-    :param X: The datapoints that belong to a specific class.
-    :param x_i: The variable we want to derive the likelihood for.
-    :return: the result of the pdf for some sample x_var.
-    """
-    # TODO: remove this function?
-    h = np.sqrt(X.shape[0])
-    kernel_mu = np.array([0 for _ in range(X.shape[1])])
-    kernel_sigma = np.eye(X.shape[1])
-
-    sum = 0
-    for i, x in enumerate(X):  # for each datapoint in X
-        x_tmp = (x_i - x) / h
-        kernel = gaussian(x_tmp, kernel_mu, kernel_sigma)
-        sum += kernel
-
-    denominator = (h ** X.shape[1]) * X.shape[0]
-    return sum / denominator
-
-
 def question_d(X, x_var):
     """
     Features are i.i.d. with unknown marginal distributions.
@@ -153,16 +127,4 @@ def question_d(X, x_var):
 
     likelihood = scale_factor + sum_over_d
 
-    #marginals = []
-    #for i, x in enumerate(X):  # for each datapoint
-#
-    #for j in range(X.shape[1]):  # for each feature
-    #    summ = 0
-    #    for i, x in enumerate(X[:, j]):  # for each datapoint in each feature
-    #        x_tmp = (x_var - x) / h
-    #        kernel = gaussian(x_tmp, kernel_mu, kernel_sigma, dim=1)
-    #        summ += kernel
-#
-    #    marginals.append(summ / denominator)
-#
     return likelihood

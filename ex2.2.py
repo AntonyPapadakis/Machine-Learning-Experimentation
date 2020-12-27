@@ -17,39 +17,7 @@ def gof(X, k, mus=None, sigmas=None, aic=False):
             p_i = gaussian(x, mus, sigmas)
             log_pi = np.log(p_i)
         else:
-            p_i = question_d(X, x)
-            log_pi = p_i #np.sum(np.log(p_i))
-            # TODO Problem: the metric gets 10 times larger
-
-        log_theta += log_pi
-
-        if log_theta == 0:
-            print("dsfsd")
-
-    gof = -2 * log_theta + k * penalty
-
-    return round(gof, 2)
-
-
-def gof1(X, k, mus=None, sigmas=None, aic=False):
-    # TODO: remove this, it's just the parzen for d-space not 1-d.
-
-    if aic:
-        penalty = 2
-    else:  # for bic
-        penalty = np.log(X.shape[0])
-
-    log_theta = 0
-
-    for i, x in enumerate(X):
-
-        # Instead of calculating the log product, we do the sum of logs to avoid multiplying to 0.
-        if mus is not None:
-            p_i = gaussian(x, mus, sigmas)
-            log_pi = np.log(p_i)
-        else:
-            p_i = question_d_multidimensional(X, x)
-            log_pi = np.log(p_i)
+            log_pi = question_d(X, x)
 
         log_theta += log_pi
 
@@ -98,10 +66,6 @@ def main():
         print("Class y={}, assumption d, average results (k={}): AIC={} and BIC={}".
               format(i, akaike_param_number, gof(subset, akaike_param_number, aic=True), gof(subset, akaike_param_number)))
 
-        print("----")
-
-        print("Class y={}, assumption d_multi, average results (k={}): AIC={} and BIC={}".
-              format(i, akaike_param_number, gof1(subset, akaike_param_number, aic=True), gof1(subset, akaike_param_number)))
         print("test")
 
     print("hello")
