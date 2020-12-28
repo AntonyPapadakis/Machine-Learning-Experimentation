@@ -2,10 +2,7 @@ import numpy as np
 import equidistantPoints as p
 import gaussianNoise as gn
 import linearRegression as lr
-import leastSquaresEstimate as ls
 import meanSquareError as m
-from random import random
-from random import seed
 import matplotlib.pyplot as plt
 import math
 
