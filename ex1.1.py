@@ -135,10 +135,6 @@ noise = gn.getNoise(N,mean,variance)
 Y_test = lr.getY(N, test_X, noise, thetaTransposed).T
 Y1 = lr.getYNonoise(N, test_X, thetaTransposed)
 
-
-#theta predicted using the least squares method
-#thetaPredicted, Fx = ls.getY(N,Fx,Y_test,6)
-
 #predicted y values over the testing set
 Y_pred_test = np.dot(thetaPredicted.T,Fx.T)
 

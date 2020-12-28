@@ -7,6 +7,7 @@ Y_pred is the predicted ys represented in a l x N array
 where N is the number of points in the training set
 '''
 def MSE(Y_pred,Y,N, verbose=False):
+    """Getting the Mean Squared Error """
 
     temp = []
     for i in range(0, len(Y_pred)):

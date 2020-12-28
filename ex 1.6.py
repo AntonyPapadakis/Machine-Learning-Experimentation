@@ -131,17 +131,17 @@ Y_pred = np.dot(Fx,mean_thetaY.T)
 variance_Y = variance_noise + np.dot(Fx,Cov_thetaY) @ Fx.T
 
 errors = np.abs(Y_true.T-Y_pred)
-print("errors:",errors)
+print("errors:",errors.T)
 
 #mean square error over test set
-MSE_test = m.MSE(Y_pred.T,Y_true,N)
+MSE_test = m.MSE(Y_pred.T,Y_true,N,verbose=True)
 
 print("the MSE for the test set is:", MSE_test)
 
 #blue for true values red for predicted
 plt.figure(num=2)
-plt.title("prediction-red vs true-blue")
-plt.plot(X,Y_true.T,'b-',X,Y_pred,'r+')
+plt.title("prediction-blue vs true-red")
+plt.plot(X,Y_true.T,'r-',X,Y_pred,'b+')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()

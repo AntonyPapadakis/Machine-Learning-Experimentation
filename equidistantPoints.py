@@ -2,12 +2,9 @@ import numpy as np
 import math
 
 
-'''
-Getting N equidistant points
-degree corresponds to the polynomial
-'''
-def getPoints(N,start,end,degree):
 
+def getPoints(N,start,end,degree):
+    """Getting N equidistant points, degree corresponds to the polynomial"""
     maxDistance = end - start
 
     #since our N points are equidistant
