@@ -4,8 +4,6 @@ import gaussianNoise as gn
 import linearRegression as lr
 import leastSquaresEstimate as ls
 import meanSquareError as m
-from random import random
-from random import seed
 import matplotlib.pyplot as plt
 import math
 from scipy.stats import norm
@@ -56,8 +54,6 @@ for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
     plt.figure(num=degree)
     plt.title("experiments' X vs Y "+ str(degree-1) +" degree polynomial")
 
-    plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.6, label='norm pdf')
-
     l_means = [] #list of means
     l_variances = [] #list of variance
     points = np.zeros((100,20))
@@ -89,6 +85,8 @@ for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
         MSE = m.MSE(Y_pred,Y,N)
 
 
+    #true curve - blue for last
+    plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.6, label='norm pdf')
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.show()
@@ -110,7 +108,7 @@ for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
 
     plt.plot(x,norm.pdf(x,real_mean, real_variance), 'go')
     plt.xlabel('X')
-    plt.ylabel('Probability')
+    plt.ylabel('pdfunction value')
     plt.show()
 
 
