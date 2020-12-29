@@ -123,22 +123,31 @@ end=2
 X, Fx = p.getPoints(N,start,end,6)
 Y_true= lr.getYNonoise(N, X, thetaTransposed)
 
+#predictions
+Y_pred = np.dot(mean_thetaY,Fx.T)
+variance_Y = []
 
-Y_pred = np.dot(Fx,mean_thetaY.T)
-variance_Y = variance_noise + np.dot(Fx,Cov_thetaY) @ Fx.T
+for i in range(N):
+    #for the error bars
+    variance_Y.append(variance_noise + np.dot(Fx[i],Cov_thetaY) @ Fx[i].T)
 
-errors = np.abs(Y_true.T-Y_pred)
-print("errors:",errors.T)
+
+
+errors = np.abs(Y_true-Y_pred)
+print("errors:",errors)
 
 #mean square error over test set
-MSE_test = m.MSE(Y_pred.T,Y_true,N,verbose=True)
+MSE_test = m.MSE(Y_pred,Y_true,N)
 
 print("the MSE for the test set is:", MSE_test)
 
 #blue for true values red for predicted
 plt.figure(num=2)
-plt.title("prediction-blue vs true-red")
-plt.plot(X,Y_true.T,'r-',X,Y_pred,'b+')
+plt.title("true(red) vs predictions and their errorbars(variance of y predictions)")
+
+plt.plot(X,Y_true.T,'r-',X,Y_pred.T,'bo')
+plt.errorbar(X,Y_pred.T, yerr=variance_Y ,fmt='none', color='b')
+
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
