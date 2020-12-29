@@ -29,9 +29,9 @@ thetaTransposed = np.transpose(theta)
 #gaussian noise
 noise = gn.getNoise(N,mean,variance)
 
-X_true, Fx = p.getPoints(N,start,end,6)
+X, Fx = p.getPoints(N,start,end,6)
 #get the yn's
-Y_true = lr.getY(N, X_true, noise, thetaTransposed).T
+Y_true = lr.getYNonoise(N, X, thetaTransposed).T
 
 real_mean = np.mean(Y_true)
 real_variance = np.var(Y_true)
@@ -39,7 +39,7 @@ real_variance = np.var(Y_true)
 plt.figure(num=1)
 plt.title("X vs Y")
 
-plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.95, label='norm pdf')
+plt.plot(X, Y_true, 'b-', lw=5, alpha=0.95, label='norm pdf')
 
 plt.xlabel('X')
 plt.ylabel('Y')
@@ -49,21 +49,21 @@ x = np.linspace(real_mean - 3*math.sqrt(real_variance), real_mean + 3*math.sqrt(
 
 
 
-for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
+for degree in {11,3}: #3 for 2nd degree and 11 for 10th degree polynomial
 
     plt.figure(num=degree)
     plt.title("experiments' X vs Y "+ str(degree-1) +" degree polynomial")
 
     l_means = [] #list of means
     l_variances = [] #list of variance
-    points = np.zeros((100,20))
+    points = np.zeros((100,N))
 
     for i in range(0,100):
 
         #gaussian noise
         noise = gn.getNoise(N,mean,variance)
 
-        X, Fx = p.getPoints(N,start,end,degree)
+        Fx = p.getF(N,X,degree)
         #get the yn's
         Y = lr.getY(N, X, noise, thetaTransposed).T
 
@@ -73,22 +73,37 @@ for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
         #predicted y values
         Y_pred = np.dot(thetaPredicted.T,Fx.T)
 
-        points[i, 0:20] = Y_pred[0:20]
+        points[i, 0:N] = Y_pred[0:N]
         l_means.append(np.mean(Y_pred))
         l_variances.append(np.var(Y_pred))
 
         #curves
-        plt.plot(X, Y, 'r-', lw=5, alpha=0.6, label='pdf experiments')
 
 
         #mean square error over training set
         MSE = m.MSE(Y_pred,Y,N)
 
 
-    #true curve - blue for last
-    plt.plot(X_true, Y_true, 'b-', lw=5, alpha=0.6, label='norm pdf')
+    #variance and mean of each y_pred point
+    variance_ypred = np.zeros((1,N))
+    mean_ypred = np.zeros((1,N))
+    for i in range(N):
+        variance_ypred[0,i] = np.var(points[:,i])
+        mean_ypred[0,i] = np.mean(points[:,i])
+
+
+
+    #true curve - blue
+
+    plt.plot(X, Y_true, 'b-', lw=5, alpha=0.6, label='norm pdf')
     plt.xlabel('X')
     plt.ylabel('Y')
+
+    #predicted curve - red
+
+    plt.plot(X,mean_ypred[0],'r-')
+    plt.errorbar(X,mean_ypred[0], yerr=variance_ypred[0] ,fmt='none', color='r')
+
     plt.show()
 
     #green for actual values red for predicted
@@ -97,6 +112,8 @@ for degree in {3,11}: #3 for 2nd degree and 11 for 10th degree polynomial
 
 
     print(degree-1," polynomial case")
+    print("predicted values variance",variance_ypred)
+    print("predicted values means",mean_ypred)
     print("MSE ", MSE)
     print("real variance", real_variance)
     print("real mean", real_mean)

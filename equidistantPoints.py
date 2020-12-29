@@ -18,3 +18,12 @@ def getPoints(N,start,end,degree):
             Fx[j,i] = math.pow(points[j],i)
 
     return (points, Fx)
+
+def getF(N,X,degree):
+    """returns Fx"""
+    Fx = np.ones((N,degree))
+    for i in range(degree):
+        for j in range(N):
+            Fx[j,i] = math.pow(X[j],i)
+
+    return Fx
